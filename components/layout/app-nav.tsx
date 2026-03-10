@@ -1,0 +1,26 @@
+import { LayoutGrid } from "lucide-react"
+import { UserMenu } from "./user-menu"
+
+interface AppNavProps {
+  userEmail: string | undefined
+  userName?: string | null
+}
+
+export function AppNav({ userEmail, userName }: AppNavProps) {
+  return (
+    <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/80 backdrop-blur-sm">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 flex h-14 items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
+            <LayoutGrid className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-sm font-semibold text-gray-900 tracking-tight">
+            Inventario Inteligente
+          </span>
+        </div>
+
+        <UserMenu userEmail={userEmail} userName={userName} />
+      </div>
+    </header>
+  )
+}
