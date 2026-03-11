@@ -6,8 +6,6 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { collectFieldErrors, type AuthState } from "./shared"
 
-export type { AuthState }
-
 export async function registerAction(
   _prevState: AuthState,
   formData: FormData,

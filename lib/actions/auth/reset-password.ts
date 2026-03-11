@@ -5,8 +5,6 @@ import { createClient } from "@/lib/supabase/server"
 import { headers } from "next/headers"
 import { type AuthState } from "./shared"
 
-export type { AuthState }
-
 export async function resetPasswordAction(
   _prevState: AuthState,
   formData: FormData,

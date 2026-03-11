@@ -52,7 +52,7 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
           "fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm transition-all duration-500",
           isConnected
             ? "border-primary/20 bg-primary/5 text-primary"
-            : "border-red-200 bg-red-50 text-red-700"
+            : "border-red-200 bg-red-50 text-red-700",
         )}
       >
         {isConnected ? (

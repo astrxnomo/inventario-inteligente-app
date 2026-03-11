@@ -5,8 +5,6 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { collectFieldErrors, type AuthState } from "./shared"
 
-export type { AuthState }
-
 export async function updatePasswordAction(
   _prevState: AuthState,
   formData: FormData,

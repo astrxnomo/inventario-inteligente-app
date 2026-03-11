@@ -9,10 +9,8 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  updatePasswordAction,
-  type AuthState,
-} from "@/lib/actions/auth/update-password"
+import type { AuthState } from "@/lib/actions/auth/shared"
+import { updatePasswordAction } from "@/lib/actions/auth/update-password"
 import { useActionState } from "react"
 import { SubmitButton } from "../ui/submit-button"
 
