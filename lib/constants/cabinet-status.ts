@@ -21,5 +21,3 @@ export const STATUS_CONFIG = {
     borderClass: "hover:border-red-200",
   },
 } as const
-
-export type CabinetStatus = keyof typeof STATUS_CONFIG

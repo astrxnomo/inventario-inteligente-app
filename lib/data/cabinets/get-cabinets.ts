@@ -1,13 +1,16 @@
 import { createClient } from "@/lib/supabase/server"
-import type { Cabinet } from "@/lib/types/cabinet"
+import type { Cabinet } from "@/lib/types/cabinets"
 
 export async function getCabinetsWithCounts(
-  supabase: Awaited<ReturnType<typeof createClient>>
+  supabase: Awaited<ReturnType<typeof createClient>>,
 ): Promise<Cabinet[]> {
   const [cabinetsRes, itemCountsRes, activeSessionsRes] = await Promise.all([
     supabase.from("cabinets").select("*").order("name"),
     supabase.from("inventory_items").select("cabinet_id"),
-    supabase.from("cabinet_sessions").select("cabinet_id").is("closed_at", null),
+    supabase
+      .from("cabinet_sessions")
+      .select("cabinet_id")
+      .is("closed_at", null),
   ])
 
   const itemCountMap: Record<string, number> = {}

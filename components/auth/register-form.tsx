@@ -1,82 +1,43 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createClient } from "@/lib/supabase/client"
-import { registerSchema, type RegisterInput } from "@/lib/validations/auth"
+import { registerAction, type AuthState } from "@/lib/actions/auth/register"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { toast } from "sonner"
+import { useActionState } from "react"
+import { SubmitButton } from "../ui/submit-button"
 
-type Errors = Partial<Record<keyof RegisterInput, string>>
+const initialState: AuthState = {}
 
 export function RegisterForm() {
-  const router = useRouter()
-  const [values, setValues] = useState<RegisterInput>({ email: "", password: "", confirm: "" })
-  const [errors, setErrors] = useState<Errors>({})
-  const [loading, setLoading] = useState(false)
-  const [needsConfirm, setNeedsConfirm] = useState(false)
+  const [state, action] = useActionState(registerAction, initialState)
 
-  function set(field: keyof RegisterInput) {
-    return (e: React.ChangeEvent<HTMLInputElement>) =>
-      setValues((v) => ({ ...v, [field]: e.target.value }))
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setErrors({})
-
-    const result = registerSchema.safeParse(values)
-    if (!result.success) {
-      const fieldErrors: Errors = {}
-      for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof RegisterInput
-        fieldErrors[field] = issue.message
-      }
-      setErrors(fieldErrors)
-      return
-    }
-
-    setLoading(true)
-    const supabase = createClient()
-    const { data, error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-    })
-    setLoading(false)
-
-    if (error) {
-      toast.error(error.message)
-      return
-    }
-
-    if (data.session) {
-      toast.success("¡Bienvenido!")
-      router.push("/")
-      router.refresh()
-    } else {
-      setNeedsConfirm(true)
-      toast.success("Revisa tu email para confirmar tu cuenta.")
-    }
-  }
-
-  if (needsConfirm) {
+  if (state.success) {
     return (
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Revisa tu email</CardTitle>
           <CardDescription>
             Enviamos un link de confirmación a{" "}
-            <span className="font-medium text-foreground">{values.email}</span>.
+            <span className="font-medium text-foreground">
+              {state.successEmail}
+            </span>
+            .
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Link href="/login">
-            <Button variant="outline" className="w-full">Ir al login</Button>
+            <Button variant="outline" className="w-full">
+              Ir al login
+            </Button>
           </Link>
         </CardContent>
       </Card>
@@ -90,53 +51,72 @@ export function RegisterForm() {
         <CardDescription>Ingresa tus datos para registrarte.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form action={action} className="space-y-4">
+          {state.error && (
+            <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {state.error}
+            </p>
+          )}
+
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="tu@email.com"
-              value={values.email}
-              onChange={set("email")}
-              disabled={loading}
               autoComplete="email"
               autoFocus
             />
-            {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+            {state.fieldErrors?.email && (
+              <p className="text-xs text-destructive">
+                {state.fieldErrors.email}
+              </p>
+            )}
           </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="password">Contraseña</Label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
-              value={values.password}
-              onChange={set("password")}
-              disabled={loading}
               autoComplete="new-password"
             />
-            {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+            {state.fieldErrors?.password && (
+              <p className="text-xs text-destructive">
+                {state.fieldErrors.password}
+              </p>
+            )}
           </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="confirm">Confirmar contraseña</Label>
             <Input
               id="confirm"
+              name="confirm"
               type="password"
               placeholder="••••••••"
-              value={values.confirm}
-              onChange={set("confirm")}
-              disabled={loading}
               autoComplete="new-password"
             />
-            {errors.confirm && <p className="text-xs text-destructive">{errors.confirm}</p>}
+            {state.fieldErrors?.confirm && (
+              <p className="text-xs text-destructive">
+                {state.fieldErrors.confirm}
+              </p>
+            )}
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creando cuenta…" : "Crear cuenta"}
-          </Button>
+
+          <SubmitButton pendingText="Creando cuenta…">
+            Crear cuenta
+          </SubmitButton>
+
           <p className="text-center text-sm text-muted-foreground">
             ¿Ya tienes cuenta?{" "}
-            <Link href="/login" className="text-foreground underline-offset-4 hover:underline">
+            <Link
+              href="/login"
+              className="text-foreground underline-offset-4 hover:underline"
+            >
               Inicia sesión
             </Link>
           </p>

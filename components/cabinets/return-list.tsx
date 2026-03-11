@@ -1,4 +1,4 @@
-import type { WithdrawnItem } from "@/lib/types/inventory"
+import type { WithdrawnItem } from "@/lib/types/cabinets"
 import { CheckCircle2 } from "lucide-react"
 
 interface ReturnListProps {
@@ -9,8 +9,8 @@ export function ReturnList({ withdrawnItems }: ReturnListProps) {
   if (withdrawnItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
-        <CheckCircle2 className="h-8 w-8 text-primary/20 mb-2" />
-        <p className="text-gray-400 text-sm">No hay artículos pendientes</p>
+        <CheckCircle2 className="mb-2 h-8 w-8 text-primary/20" />
+        <p className="text-sm text-gray-400">No hay artículos pendientes</p>
       </div>
     )
   }
@@ -22,14 +22,16 @@ export function ReturnList({ withdrawnItems }: ReturnListProps) {
           key={item.session_item_id || item.item_id}
           className="flex items-center justify-between rounded-lg border border-amber-100 bg-amber-50 px-4 py-3"
         >
-          <span className="text-sm text-gray-800 truncate">
+          <span className="truncate text-sm text-gray-800">
             {item.name}
             {item.unit && (
-              <span className="ml-1.5 text-[11px] text-gray-400">{item.unit}</span>
+              <span className="ml-1.5 text-[11px] text-gray-400">
+                {item.unit}
+              </span>
             )}
           </span>
-          <div className="flex items-center gap-1 shrink-0 ml-3">
-            <span className="text-sm font-semibold tabular-nums text-amber-700">
+          <div className="ml-3 flex shrink-0 items-center gap-1">
+            <span className="text-sm font-semibold text-amber-700 tabular-nums">
               {item.quantity}
             </span>
             <span className="text-[11px] text-amber-500">

@@ -11,7 +11,6 @@ function ThemeProvider({
     <NextThemesProvider
       attribute="class"
       defaultTheme="light"
-      enableSystem
       disableTransitionOnChange
       {...props}
     >
@@ -68,4 +67,3 @@ function ThemeHotkey() {
 }
 
 export { ThemeProvider }
-

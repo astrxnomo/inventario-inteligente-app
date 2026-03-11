@@ -1,7 +1,7 @@
 "use client"
 
 import { useCabinets } from "@/hooks/use-cabinets"
-import type { Cabinet } from "@/lib/types/cabinet"
+import type { Cabinet } from "@/lib/types/cabinets"
 import { cn } from "@/lib/utils"
 import { Wifi, WifiOff } from "lucide-react"
 import { useState } from "react"
@@ -15,22 +15,31 @@ interface CabinetGridProps {
 
 export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
   const { cabinets, isConnected } = useCabinets(initialCabinets)
-  const [selected, setSelected] = useState<Cabinet | null>(null)
+  // Store only the ID so the drawer always receives the *live* cabinet from the
+  // realtime-updated cabinets array — not a stale snapshot from click time.
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
+  // Derive the current live cabinet on every render
+  const selectedCabinet = selectedId
+    ? (cabinets.find((c) => c.id === selectedId) ?? null)
+    : null
+
   function handleCardClick(cabinet: Cabinet) {
-    setSelected(cabinet)
+    setSelectedId(cabinet.id)
     setDrawerOpen(true)
   }
 
   if (cabinets.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="h-16 w-16 rounded-2xl border border-gray-200 bg-gray-50 flex items-center justify-center mb-4">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50">
           <span className="text-3xl">🗄️</span>
         </div>
-        <p className="text-gray-500 text-sm">No hay gabinetes registrados.</p>
-        <p className="text-gray-400 text-xs mt-1">Pide a un administrador que agregue gabinetes.</p>
+        <p className="text-sm text-gray-500">No hay gabinetes registrados.</p>
+        <p className="mt-1 text-xs text-gray-400">
+          Pide a un administrador que agregue gabinetes.
+        </p>
       </div>
     )
   }
@@ -40,25 +49,33 @@ export function CabinetGrid({ initialCabinets, userId }: CabinetGridProps) {
       {/* Connection indicator */}
       <div
         className={cn(
-          "fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium border shadow-sm transition-all duration-500",
+          "fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-sm transition-all duration-500",
           isConnected
-            ? "bg-primary/5 text-primary border-primary/20"
-            : "bg-red-50 text-red-700 border-red-200"
+            ? "border-primary/20 bg-primary/5 text-primary"
+            : "border-red-200 bg-red-50 text-red-700"
         )}
       >
-        {isConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+        {isConnected ? (
+          <Wifi className="h-3 w-3" />
+        ) : (
+          <WifiOff className="h-3 w-3" />
+        )}
         {isConnected ? "En vivo" : "Sin conexión"}
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {cabinets.map((cabinet) => (
-          <CabinetCard key={cabinet.id} cabinet={cabinet} onClick={handleCardClick} />
+          <CabinetCard
+            key={cabinet.id}
+            cabinet={cabinet}
+            onClick={handleCardClick}
+          />
         ))}
       </div>
 
       <CabinetDetail
-        cabinet={selected}
+        cabinet={selectedCabinet}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         userId={userId}
