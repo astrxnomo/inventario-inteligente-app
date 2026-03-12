@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/client"
 import type {
-    ActionResult,
-    InventoryItem,
-    WithdrawnItem,
+  ActionResult,
+  InventoryItem,
+  WithdrawnItem,
 } from "@/lib/types/cabinets"
 import { fetchInventoryItems } from "./get-inventory-items"
 
@@ -29,15 +29,17 @@ export async function fetchCabinetDetailState(
   if (session) {
     const { data: sessionItems, error } = await supabase
       .from("session_items")
-      .select("id, item_id, quantity, inventory_items(name, inventory_categories(name))")
+      .select(
+        "id, item_id, action, quantity, inventory_items(name, inventory_categories(name))",
+      )
       .eq("session_id", session.id)
-      .eq("action", "withdrawn")
 
     if (error) return { data: null, error: error.message }
 
     type JoinedSessionItem = {
       id: string
       item_id: string
+      action: string
       quantity: number
       inventory_items: {
         name: string
@@ -45,15 +47,37 @@ export async function fetchCabinetDetailState(
       } | null
     }
 
-    const withdrawnItems: WithdrawnItem[] = (
-      (sessionItems ?? []) as unknown as JoinedSessionItem[]
-    ).map((si) => ({
-      session_item_id: si.id,
-      item_id: si.item_id,
-      name: si.inventory_items?.name ?? "",
-      category: si.inventory_items?.inventory_categories?.name ?? "Sin categoría",
-      quantity: si.quantity,
-    }))
+    // Compute net quantity per item (withdrawn minus returned)
+    const netQtyMap = new Map<string, number>()
+    const metaMap = new Map<string, { name: string; category: string }>()
+
+    for (const si of (sessionItems ?? []) as unknown as JoinedSessionItem[]) {
+      const sign = si.action === "withdrawn" ? 1 : -1
+      netQtyMap.set(
+        si.item_id,
+        (netQtyMap.get(si.item_id) ?? 0) + sign * si.quantity,
+      )
+      if (!metaMap.has(si.item_id)) {
+        metaMap.set(si.item_id, {
+          name: si.inventory_items?.name ?? "",
+          category:
+            si.inventory_items?.inventory_categories?.name ?? "Sin categoría",
+        })
+      }
+    }
+
+    const withdrawnItems: WithdrawnItem[] = Array.from(netQtyMap.entries())
+      .filter(([, net]) => net > 0)
+      .map(([item_id, quantity]) => {
+        const meta = metaMap.get(item_id)!
+        return {
+          session_item_id: "",
+          item_id,
+          name: meta.name,
+          category: meta.category,
+          quantity,
+        }
+      })
 
     return {
       data: { sessionId: session.id, items: [], withdrawnItems },

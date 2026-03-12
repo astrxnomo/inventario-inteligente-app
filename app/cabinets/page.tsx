@@ -1,4 +1,5 @@
 import { CabinetGrid } from "@/components/cabinets/cabinet-grid"
+import { PendingAccessScreen } from "@/components/cabinets/pending-access-screen"
 import { AppNav } from "@/components/layout/app-nav"
 import { getCabinetsWithCounts } from "@/lib/data/cabinets/get-cabinets"
 import { createClient } from "@/lib/supabase/server"
@@ -12,11 +13,30 @@ export default async function CabinetsPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/login")
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, full_name")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile || profile.role === "pending") {
+    return (
+      <PendingAccessScreen
+        userEmail={user.email}
+        userName={profile?.full_name}
+      />
+    )
+  }
+
   const cabinets = await getCabinetsWithCounts(supabase)
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AppNav userEmail={user.email} />
+      <AppNav
+        userEmail={user.email}
+        userRole={profile.role}
+        userName={profile.full_name}
+      />
 
       <main className="pb-8">
         <div className="mx-auto max-w-7xl px-4 pt-8 pb-5 sm:px-6">

@@ -15,12 +15,14 @@ export async function withdrawCabinetItems(
 
   const supabase = createClient()
 
-  // Signal the physical cabinet (ESP32) to unlock
-  await supabase.channel("esp32-commands").send({
-    type: "broadcast",
-    event: "open",
-    payload: { cabinet_id: payload.cabinetId },
-  })
+  // Signal the physical cabinet (ESP32) to unlock.
+  // Fire-and-forget: don't block the DB operation on the hardware signal.
+  supabase
+    .channel("esp32-commands")
+    .httpSend("open", { cabinet_id: payload.cabinetId })
+    .catch(() => {
+      // Ignore broadcast failures — cabinet may not be connected
+    })
 
   const { data, error } = await supabase.rpc("withdraw_items", {
     p_cabinet_id: payload.cabinetId,

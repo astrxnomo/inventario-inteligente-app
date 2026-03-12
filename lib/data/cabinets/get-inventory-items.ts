@@ -46,7 +46,7 @@ export async function fetchInventoryItems(
     quantity: number
     created_at: string
     updated_at: string
-    inventory_categories: { name: string } | null
+    inventory_categories: { name: string } | { name: string }[] | null
   }
 
   return {
@@ -58,7 +58,10 @@ export async function fetchInventoryItems(
       quantity: item.quantity,
       created_at: item.created_at,
       updated_at: item.updated_at,
-      category: item.inventory_categories?.name ?? "Sin categoría",
+      category:
+        (Array.isArray(item.inventory_categories)
+          ? item.inventory_categories[0]?.name
+          : item.inventory_categories?.name) ?? "Sin categoría",
       in_use: inUseMap[item.id] ?? 0,
     })),
     error: null,
