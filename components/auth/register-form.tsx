@@ -60,6 +60,23 @@ export function RegisterForm() {
           )}
 
           <div className="space-y-1.5">
+            <Label htmlFor="full_name">Nombre completo</Label>
+            <Input
+              id="full_name"
+              name="full_name"
+              type="text"
+              placeholder="Juan Pérez"
+              autoComplete="name"
+              autoFocus
+            />
+            {state.fieldErrors?.full_name && (
+              <p className="text-xs text-destructive">
+                {state.fieldErrors.full_name}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -67,7 +84,6 @@ export function RegisterForm() {
               type="email"
               placeholder="tu@email.com"
               autoComplete="email"
-              autoFocus
             />
             {state.fieldErrors?.email && (
               <p className="text-xs text-destructive">

@@ -11,6 +11,7 @@ export async function registerAction(
   formData: FormData,
 ): Promise<AuthState> {
   const result = registerSchema.safeParse({
+    full_name: formData.get("full_name"),
     email: formData.get("email"),
     password: formData.get("password"),
     confirm: formData.get("confirm"),
@@ -25,7 +26,10 @@ export async function registerAction(
   const { data, error } = await supabase.auth.signUp({
     email: result.data.email,
     password: result.data.password,
-    options: { emailRedirectTo: `${origin}/auth/callback` },
+    options: {
+      emailRedirectTo: `${origin}/auth/callback`,
+      data: { full_name: result.data.full_name },
+    },
   })
 
   if (error) return { error: error.message }

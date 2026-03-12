@@ -1,5 +1,6 @@
 export type AuthState = {
   fieldErrors?: {
+    full_name?: string
     email?: string
     password?: string
     confirm?: string
