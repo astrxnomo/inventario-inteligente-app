@@ -45,6 +45,12 @@ export interface ReturnPayload {
   userId: string
 }
 
+export interface ReturnSingleItemPayload {
+  sessionId: string
+  userId: string
+  itemId: string
+}
+
 // ─── Generic typed action result ──────────────────────────────────────────────
 export type ActionResult<T> =
   | { data: T; error: null }

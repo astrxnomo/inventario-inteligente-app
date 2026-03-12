@@ -12,11 +12,19 @@ export const withdrawSchema = z.object({
   items: z.array(withdrawItemSchema).min(1, "Selecciona al menos un artículo"),
 })
 
-// ─── Return items ──────────────────────────────────────────────────────────────
+// ─── Return all items ──────────────────────────────────────────────────────────
 export const returnSchema = z.object({
   sessionId: z.string().uuid("ID de sesión inválido"),
   userId: z.string().uuid("ID de usuario inválido"),
 })
 
+// ─── Return single item ────────────────────────────────────────────────────────
+export const returnSingleItemSchema = z.object({
+  sessionId: z.string().uuid("ID de sesión inválido"),
+  userId: z.string().uuid("ID de usuario inválido"),
+  itemId: z.string().uuid("ID de artículo inválido"),
+})
+
 export type WithdrawInput = z.infer<typeof withdrawSchema>
 export type ReturnInput = z.infer<typeof returnSchema>
+export type ReturnSingleItemInput = z.infer<typeof returnSingleItemSchema>
