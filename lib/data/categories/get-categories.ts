@@ -1,5 +1,5 @@
-import type { Category } from "@/lib/types/categories"
 import type { Database } from "@/lib/supabase/types"
+import type { Category } from "@/lib/types/categories"
 import type { SupabaseClient } from "@supabase/supabase-js"
 
 export type { Category }

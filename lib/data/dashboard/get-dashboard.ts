@@ -1,5 +1,5 @@
-import type { DashboardKpis } from "@/lib/types/users"
 import type { Database } from "@/lib/supabase/types"
+import type { DashboardKpis } from "@/lib/types/users"
 import type { SupabaseClient } from "@supabase/supabase-js"
 
 export type { DashboardKpis }

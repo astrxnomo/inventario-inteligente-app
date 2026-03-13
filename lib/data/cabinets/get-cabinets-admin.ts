@@ -1,5 +1,5 @@
-import type { CabinetAdmin, CabinetItemAdmin } from "@/lib/types/cabinets"
 import type { Database } from "@/lib/supabase/types"
+import type { CabinetAdmin, CabinetItemAdmin } from "@/lib/types/cabinets"
 import type { SupabaseClient } from "@supabase/supabase-js"
 
 export type { CabinetAdmin, CabinetItemAdmin }
