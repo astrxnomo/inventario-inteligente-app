@@ -30,7 +30,9 @@ export function RefreshButton({
       onClick={() => startTransition(() => router.refresh())}
       className={className}
     >
-      <RefreshCw className={cn("mr-2 h-3.5 w-3.5", pending && "animate-spin")} />
+      <RefreshCw
+        className={cn("mr-2 h-3.5 w-3.5", pending && "animate-spin")}
+      />
       {label}
     </Button>
   )

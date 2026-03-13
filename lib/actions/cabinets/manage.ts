@@ -1,12 +1,12 @@
 "use server"
 
+import {
+    assertAdmin,
+    collectFieldErrors,
+    type AdminFormState,
+} from "@/lib/actions/shared"
 import { cabinetSchema } from "@/lib/schemas/cabinets"
 import { revalidatePath } from "next/cache"
-import {
-  assertAdmin,
-  collectFieldErrors,
-  type AdminFormState,
-} from "@/lib/actions/shared"
 
 // ─── Create ───────────────────────────────────────────────────────────────────
 export async function createCabinet(

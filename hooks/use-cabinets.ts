@@ -13,7 +13,11 @@ export function useCabinets(initialCabinets: Cabinet[]) {
       onCabinetInsert(row: CabinetRow) {
         setCabinets((prev) => [
           ...prev,
-          { ...row, _count: { inventory_items: 0, active_sessions: 0 } },
+          {
+            ...row,
+            _count: { inventory_items: 0, active_sessions: 0 },
+            item_names: [],
+          },
         ])
       },
 
@@ -46,12 +50,13 @@ export function useCabinets(initialCabinets: Cabinet[]) {
         )
       },
 
-      onInventoryInsert(cabinetId: string) {
+      onInventoryInsert(cabinetId: string, itemName: string) {
         setCabinets((prev) =>
           prev.map((c) =>
             c.id === cabinetId
               ? {
                   ...c,
+                  item_names: [...c.item_names, itemName].sort(),
                   _count: {
                     ...c._count,
                     inventory_items: c._count.inventory_items + 1,
@@ -62,19 +67,27 @@ export function useCabinets(initialCabinets: Cabinet[]) {
         )
       },
 
-      onInventoryDelete(cabinetId: string) {
+      onInventoryDelete(cabinetId: string, itemName: string) {
         setCabinets((prev) =>
-          prev.map((c) =>
-            c.id === cabinetId
-              ? {
-                  ...c,
-                  _count: {
-                    ...c._count,
-                    inventory_items: Math.max(0, c._count.inventory_items - 1),
-                  },
-                }
-              : c,
-          ),
+          prev.map((c) => {
+            if (c.id !== cabinetId) return c
+            const idx = c.item_names.indexOf(itemName)
+            const item_names =
+              idx === -1
+                ? c.item_names
+                : [
+                    ...c.item_names.slice(0, idx),
+                    ...c.item_names.slice(idx + 1),
+                  ]
+            return {
+              ...c,
+              item_names,
+              _count: {
+                ...c._count,
+                inventory_items: Math.max(0, c._count.inventory_items - 1),
+              },
+            }
+          }),
         )
       },
 
