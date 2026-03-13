@@ -1,5 +1,5 @@
-import { AppNav } from "@/components/layout/app-nav"
 import { SessionHistory } from "@/components/history/session-history"
+import { AppNav } from "@/components/layout/app-nav"
 import { RefreshButton } from "@/components/ui/refresh-button"
 import { getUserSessionHistory } from "@/lib/data/cabinets/get-user-history"
 import { createClient } from "@/lib/supabase/server"

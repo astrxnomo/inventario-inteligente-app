@@ -1,5 +1,5 @@
 import type { DashboardKpis } from "@/lib/types/users"
-import { LayoutGrid, Package, Users, Lock, Activity } from "lucide-react"
+import { Activity, LayoutGrid, Lock, Package, Users } from "lucide-react"
 
 const CARDS = (kpis: DashboardKpis) => [
   {
